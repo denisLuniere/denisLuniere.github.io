@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Denis Luniere — Portfólio</title>
+  <meta name="description" content="Portfólio do desenvolvedor Denis Luniere — Java, Backend, Cloud. Projetos, habilidades e experiência." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#0c0f14;            /* fundo principal (dark) */
+      --bg-elev:#121725;        /* cartões/elementos */
+      --txt:#e6e7ee;            /* texto primário */
+      --muted:#a9afc7;          /* texto secundário */
+      --accent:#7c4dff;         /* roxo neon */
+      --accent-2:#00e5ff;       /* ciano sutil */
+      --ok:#22c55e;             /* verde */
+      --warn:#f59e0b;           /* amarelo */
+      --radius:18px;
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,sans-serif;
+      color:var(--txt); background:radial-gradient(1200px 1200px at 10% -10%, rgba(124,77,255,.12), rgba(0,0,0,0)) ,
+                       radial-gradient(1000px 1000px at 110% 0%, rgba(0,229,255,.10), rgba(0,0,0,0)) ,
+                       var(--bg);
+      line-height:1.6;
+      scroll-behavior:smooth;
+    }
+    a{color:inherit;text-decoration:none}
+    
+    /* Layout */
+    .container{max-width:1100px;margin:0 auto;padding:0 20px}
+    header{
+      position:sticky; top:0; z-index:50; backdrop-filter:saturate(140%) blur(8px);
+      background:linear-gradient(180deg, rgba(18,23,37,.78), rgba(18,23,37,.35) 80%, transparent);
+      border-bottom:1px solid rgba(255,255,255,.06)
+    }
+    .topbar{display:flex;align-items:center;gap:18px;padding:12px 0}
+    .brand{display:flex;align-items:center;gap:12px}
+    .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(124,77,255,.16);color:#d7caff;border:1px solid rgba(124,77,255,.35);padding:6px 10px;border-radius:999px;font-size:12px}
+    nav ul{display:flex;gap:18px;list-style:none;margin:0;padding:0}
+    nav a{opacity:.85;padding:8px 10px;border-radius:10px}
+    nav a:hover{opacity:1;background:rgba(255,255,255,.06)}
+
+    /* Hero */
+    .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:36px;align-items:center;padding:60px 0 36px}
+    .hero h1{font-size:clamp(28px,4.4vw,48px);line-height:1.15;margin:.2rem 0 .6rem}
+    .hero p.lead{font-size:clamp(16px,2vw,18px);color:var(--muted);margin:0 0 18px}
+    .actions{display:flex;gap:12px;flex-wrap:wrap}
+    .btn{display:inline-flex;align-items:center;gap:10px;padding:12px 16px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#171c2d}
+    .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));border:0;color:white;box-shadow:0 8px 22px rgba(124,77,255,.35)}
+    .btn.ghost{background:rgba(255,255,255,.04)}
+    .hero-card{background:linear-gradient(180deg,#101628,#0d1221);border:1px solid rgba(255,255,255,.08);padding:22px;border-radius:var(--radius);box-shadow:var(--shadow)}
+    .hero-card .meta{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+    .hero-card .stat{background:rgba(255,255,255,.04);padding:10px;border-radius:12px;text-align:center}
+    .avatar{width:120px;height:120px;border-radius:50%;border:3px solid rgba(124,77,255,.55);box-shadow:0 6px 24px rgba(124,77,255,.35)}
+
+    /* Sections */
+    section{padding:64px 0;border-top:1px solid rgba(255,255,255,.06)}
+    .section-title{display:flex;align-items:center;gap:12px;margin:0 0 18px}
+    .section-title .line{height:1px;flex:1;background:linear-gradient(90deg,rgba(124,77,255,.5),transparent)}
+    h2{font-size:clamp(22px,3.4vw,34px);margin:0}
+    .muted{color:var(--muted)}
+
+    .about{display:grid;grid-template-columns:1.2fr .8fr;gap:22px}
+    .card{background:linear-gradient(180deg,#101628,#0d1221);border:1px solid rgba(255,255,255,.08);padding:18px 18px;border-radius:var(--radius);box-shadow:var(--shadow)}
+
+    /* Skills */
+    .skills{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .chip{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid rgba(255,255,255,.12);border-radius:999px;background:rgba(255,255,255,.04);font-size:13px}
+    .meter{height:10px;background:rgba(255,255,255,.06);border-radius:999px;overflow:hidden}
+    .meter>span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));width:0}
+
+    /* Projects */
+    .projects{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+    .project{position:relative;padding:16px;border-radius:16px;background:linear-gradient(180deg,#0f1527,#0c1324);border:1px solid rgba(255,255,255,.08);box-shadow:var(--shadow);transition:transform .2s ease, box-shadow .2s ease}
+    .project:hover{transform:translateY(-4px);box-shadow:0 16px 34px rgba(0,0,0,.45)}
+    .project h3{margin:0 0 6px;font-size:16px}
+    .project p{margin:0 0 12px;color:var(--muted);font-size:13.5px}
+    .project .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .tag{font-size:12px;padding:6px 8px;border:1px solid rgba(255,255,255,.12);border-radius:999px;color:#d7e3ff;background:rgba(255,255,255,.04)}
+    .row .mini{font-size:12px;color:var(--muted)}
+
+    /* Timeline */
+    .timeline{position:relative;padding-left:22px}
+    .timeline:before{content:"";position:absolute;left:8px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--accent),transparent)}
+    .t-item{position:relative;margin:18px 0;padding-left:10px}
+    .t-item:before{content:"";position:absolute;left:-3px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(124,77,255,.15)}
+
+    /* Contact */
+    .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    input, textarea{width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#0e1426;color:var(--txt)}
+    textarea{min-height:120px;resize:vertical}
+    .notice{font-size:12px;color:var(--muted)}
+
+    /* Footer */
+    footer{padding:32px 0;color:#9fb1e1;text-align:center}
+
+    /* Responsive */
+    @media (max-width:1000px){
+      .hero{grid-template-columns:1fr}
+      .about{grid-template-columns:1fr}
+      .projects{grid-template-columns:repeat(2,1fr)}
+      .contact-grid{grid-template-columns:1fr}
+    }
+    @media (max-width:640px){.projects{grid-template-columns:1fr}}
+
+    /* Scroll reveal */
+    .reveal{opacity:0;transform:translateY(16px);transition:all .6s ease}
+    .reveal.in{opacity:1;transform:none}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container topbar">
+      <div class="brand">
+        <img id="avatarTop" class="avatar" alt="Avatar" src=""/>
+        <div>
+          <strong id="devName">Denis Luniere</strong>
+          <div class="badge" title="Atualiza em tempo real a partir do GitHub">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v3m6 0-2 2M6 6l2 2m8 10 2 2M6 18l2-2M3 12h3m12 0h3M12 18v3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            Live Data do GitHub
+          </div>
+        </div>
+      </div>
+      <nav aria-label="Seções">
+        <ul>
+          <li><a href="#inicio">Início</a></li>
+          <li><a href="#sobre">Sobre</a></li>
+          <li><a href="#habilidades">Habilidades</a></li>
+          <li><a href="#projetos">Projetos</a></li>
+          <li><a href="#experiencia">Experiência</a></li>
+          <li><a href="#contato">Contato</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- HERO -->
+    <section id="inicio" class="hero">
+      <div>
+        <div class="badge" style="margin-bottom:10px">Disponível para oportunidades</div>
+        <h1>Desenvolvedor Sênior Java & Backend</h1>
+        <p class="lead">Crio APIs resilientes e escaláveis, com foco em performance, clean code e boas práticas. Experiência em Java, Spring, integração com bancos de dados, mensageria e cloud.</p>
+        <div class="actions">
+          <a class="btn primary" href="#projetos">🚀 Ver projetos</a>
+          <a class="btn ghost" href="https://www.linkedin.com/in/denis-luniere-02a89a1a0/" target="_blank" rel="noopener">🔗 LinkedIn</a>
+          <a class="btn" id="btnCv" href="https://1drv.ms/w/c/66e852d0279dbfd0/Ea_npiX7DiNEiOEexlDaWM0BVD2M4-OJAT5RDf13aWopbg?e=vqufec" download>⬇️ Baixar CV (PDF)</a>
+        </div>
+      </div>
+      <aside class="hero-card">
+        <div style="display:flex; gap:16px; align-items:center">
+          <img id="avatarHero" class="avatar" alt="Foto do Denis" src=""/>
+          <div>
+            <div style="font-weight:600" id="devAlias">@CavLuni</div>
+            <div class="muted" id="devBio">Developer</div>
+            <div class="muted" id="devLocation">Brasil</div>
+          </div>
+        </div>
+        <div class="meta">
+          <div class="stat"><div class="mini">Repositórios</div><div style="font-size:22px" id="statRepos">--</div></div>
+          <div class="stat"><div class="mini">Seguidores</div><div style="font-size:22px" id="statFollowers">--</div></div>
+          <div class="stat"><div class="mini">Stars</div><div style="font-size:22px" id="statStars">--</div></div>
+        </div>
+      </aside>
+    </section>
+	
+	 <!-- SOBRE -->
+    <section id="sobre" class="reveal">
+      <div class="section-title"><h2>Sobre</h2><div class="line"></div></div>
+      <div class="about">
+        <article class="card">
+          <p>Sou o <strong>Denis Luniere</strong>, engenheiro de software com foco em <strong>Java, Python, Java script</strong> e <strong>arquiteturas backend</strong>. Tenho experiência com <em>Spring Boot</em>, modelagem de dados, integrações REST/SOAP, mensageria (Kafka), testes automatizados (JUnit/Mockito), CI/CD e práticas de observabilidade.</p>
+          <p>Gosto de destrinchar problemas complexos, projetar soluções simples e confiáveis e medir o que importa. Neste portfólio, os projetos são carregados <em>ao vivo</em> dos meus repositórios no GitHub e organizados por relevância.</p>
+        </article>
+        <aside class="card">
+          <h3 style="margin:0 0 8px">Informações rápidas</h3>
+          <ul class="muted" style="margin:8px 0 0 18px">
+            <li>🧰 Stack principal: Java, Python, Java script, Spring boot, JPA/Hibernate, SQL, PLSQL</li>
+            <li>🧪 Qualidade: JUnit, Mockito</li>
+            <li>☁️ Cloud/DevOps: Docker, GitHub Actions, Jenkins</li>
+            <li>📈 Interesses: performance, clean architecture, DDD</li>
+          </ul>
+        </aside>
+	   <aside class="card">
+		  <h3 style="margin:0 0 8px">Formação</h3>
+		  <ul class="muted" style="margin:8px 0 0 18px">
+			<li>Bacharelado em Engenharia de Software</li>
+			<li>Unicesumar - 2024</li>
+		  </ul>
+		</aside>
+		<aside class="card">
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <a class="chip" href="https://github.com/cavluni" target="_blank" rel="noopener">@CavLuni</a>
+              <a class="chip" href="https://github.com/denisLuniere" target="_blank" rel="noopener">@denisLuniere</a>
+              <a class="chip" href="https://www.linkedin.com/in/denis-luniere-02a89a1a0/" target="_blank" rel="noopener">LinkedIn</a>
+            </div>
+          </div>
+      </div>
+    </section>
+	
+	<!-- HABILIDADES -->
+    <section id="habilidades" class="reveal">
+      <div class="section-title"><h2>Habilidades</h2><div class="line"></div></div>
+      <div class="card">
+        <div id="skillsChips" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+        <div style="margin:14px 0"></div>
+        <div class="skills" id="skillsMeters"></div>
+      </div>
+    </section>
+
+    <!-- PROJETOS -->
+    <section id="projetos" class="reveal">
+      <div class="section-title"><h2>Projetos</h2><div class="line"></div></div>
+      <div id="projectsWrap" class="projects"></div>
+      <div class="notice" style="margin-top:10px">* Os projetos listados vêm dos usuários <code>denisLuniere</code> e <code>cavluni</code>, ignorando forks e ordenando por atividade recente.</div>
+    </section>
+
+    <!-- EXPERIÊNCIA (placeholder editável) -->
+    <section id="experiencia" class="reveal">
+      <div class="section-title"><h2>Experiência</h2><div class="line"></div></div>
+      <div class="card timeline">
+        <div class="t-item">
+          <strong>Desenvolvedor Sênior</strong> — Central Ailos
+          <div class="muted">10/2024 — Atual · Projeto de ETL, Big Data</div>
+          <ul class="muted" style="margin:6px 0 0 18px">
+            <li>Databricks integrando diversas APIs, bancos de dados e brokers</li>
+            <li>PySpark e AWS</li>
+            <li>Automações de pylint e validações de documentação de desenvolvimento</li>
+          </ul>
+        </div>
+        <div class="t-item">
+          <strong>Desenvolvedor Sênior</strong> — Philips Health Care
+          <div class="muted">08/2021 — 10/2024 · Desenvolvimento Full Stack</div>
+          <ul class="muted" style="margin:6px 0 0 18px">
+            <li>Java, JavaScript, Spring Boot, Hibernate, Oracle</li>
+            <li>Testes unitários JUnit/Mockito, storage AWS</li>
+            <li>Sistema hospitalar — módulos financeiro e contábil</li>
+          </ul>
+        </div>
+        <div class="t-item">
+          <strong>Desenvolvedor Web</strong> — CRM Tecnologia
+          <div class="muted">08/2020 — 07/2021 · Desenvolvimento Full Stack</div>
+          <ul class="muted" style="margin:6px 0 0 18px">
+            <li>Java, GeneXus 17, MySQL</li>
+            <li>ERP e integrações com plataformas de venda (ex.: Mercado Livre)</li>
+          </ul>
+        </div>
+        <div class="t-item">
+          <strong>Desenvolvedor Java Back-end Jr</strong> — Freelance
+          <div class="muted">01/2019 — 07/2020 · Back-end</div>
+          <ul class="muted" style="margin:6px 0 0 18px">
+            <li>Java 8, Spring Boot, Hibernate, MySQL</li>
+            <li>ERP</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTATO -->
+    <section id="contato" class="reveal">
+      <div class="section-title"><h2>Contato</h2><div class="line"></div></div>
+      <div class="card">
+        <div class="contact-grid">
+          <div>
+            <p>Vamos conversar sobre como posso agregar valor ao seu time?</p>
+            <div style="display:flex;align-items:center;gap:10px;margin:8px 0 12px">
+              <a class="chip" href="https://wa.me/5541997731213" target="_blank" rel="noopener" title="Chamar no WhatsApp">
+                <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" style="vertical-align:middle"><path fill="currentColor" d="M20.52 3.48A11.78 11.78 0 0 0 12.01.5C5.94.5.97 5.47.97 11.54c0 2.03.54 4.02 1.58 5.77L.5 23.5l6.38-1.99a11.02 11.02 0 0 0 5.12 1.31h.01c6.07 0 11.04-4.97 11.04-11.04c0-2.95-1.15-5.73-3.53-7.8Zm-8.5 17.06h-.01a9.16 9.16 0 0 1-4.66-1.27l-.33-.2l-3.79 1.18l1.23-3.69l-.22-.38a9.18 9.18 0 0 1-1.41-4.9c0-5.06 4.12-9.18 9.18-9.18c2.45 0 4.75.95 6.48 2.68a9.1 9.1 0 0 1 2.7 6.49c0 5.06-4.12 9.17-9.17 9.17Zm5.05-6.86c-.28-.14-1.66-.82-1.92-.91c-.26-.1-.45-.14-.64.14c-.19.28-.74.91-.9 1.1c-.17.19-.33.21-.61.07c-.28-.14-1.18-.44-2.25-1.41c-.83-.74-1.39-1.66-1.56-1.94c-.16-.28-.02-.43.12-.57c.12-.13.28-.33.42-.49c.14-.16.19-.28.28-.47c.09-.19.05-.35-.02-.49c-.07-.14-.64-1.54-.88-2.1c-.23-.56-.47-.48-.64-.49l-.55-.01c-.19 0-.49.07-.75.35c-.26.28-1 1-1 2.42c0 1.42 1.03 2.79 1.17 2.98c.14.19 2.03 3.1 4.92 4.35c.69.3 1.22.47 1.64.6c.69.22 1.32.19 1.82.12c.56-.08 1.66-.68 1.9-1.34c.23-.65.23-1.22.16-1.34c-.07-.12-.26-.19-.54-.33Z"/></svg>
+                WhatsApp
+              </a>
+              <span class="muted">41 - 99773-1213</span>
+            </div>
+            <p class="muted">Prefere e-mail? <a id="emailLink" href="mailto:">Clique aqui</a>. Também estou no GitHub:</p>
+            </div>
+          </div>
+          <form onsubmit="return false">
+            <input placeholder="Seu nome"/>
+            <div style="height:10px"></div>
+            <input placeholder="Seu e-mail"/>
+            <div style="height:10px"></div>
+            <textarea placeholder="Sua mensagem"></textarea>
+            <div style="height:12px"></div>
+            <button class="btn primary" type="submit">Enviar</button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    Desenvolvido por Denis Luniere · Tema dark custom inspirado no layout Istanbul · © <span id="year"></span>
+  </footer>
+
+  <script>
+    const USERS = ["cavluni","denisLuniere"]; // ordem de prioridade para avatar/bio
+    const GH = "https://api.github.com";
+
+    const $ = (sel) => document.querySelector(sel);
+
+    function revealOnScroll(){
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(e => e.isIntersecting && (e.target.classList.add('in'), io.unobserve(e.target)))
+      }, { threshold:.12});
+      document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+    }
+
+    function setText(id, text){ const el = document.getElementById(id); if(el) el.textContent = text ?? ""; }
+
+    function fmtK(n){ if(n === undefined||n===null) return "--"; if(n<1000) return String(n); if(n<10000) return (n/1000).toFixed(1).replace('.',',')+"k"; return Math.round(n/1000)+"k"; }
+
+    async function fetchJson(url){
+      const res = await fetch(url, { headers: { 'Accept': 'application/vnd.github+json' }});
+      if(!res.ok) throw new Error('GitHub API error '+res.status+' on '+url);
+      return res.json();
+    }
+
+    async function loadProfile(){
+      // pega o primeiro usuário que responder
+      for(const u of USERS){
+        try{
+          const p = await fetchJson(`${GH}/users/${u}`);
+          $('#avatarTop').src = p.avatar_url; $('#avatarHero').src = p.avatar_url;
+          setText('devName', p.name || p.login);
+          setText('devAlias', '@'+p.login);
+          setText('devBio', p.bio || 'Software Developer');
+          setText('devLocation', p.location || '');
+          setText('statRepos', p.public_repos);
+          setText('statFollowers', p.followers);
+          // mail se existir no perfil
+          if(p.email){ const l=$('#emailLink'); l.href = 'mailto:'+p.email; l.textContent = p.email; }
+          break;
+        }catch(e){ /* tenta o próximo */ }
+      }
+    }
+
+    async function loadRepos(){
+      // junta repos de ambos, remove fork e ordena por atividade + stars
+      const all = [];
+      for(const u of USERS){
+        try{
+          const list = await fetchJson(`${GH}/users/${u}/repos?per_page=100&sort=updated`);
+          list.forEach(r => { if(!r.fork) all.push({owner:u, ...r}); });
+        }catch(e){ console.warn('Falha ao ler repos de', u, e); }
+      }
+      // computa score simples
+      all.forEach(r => r.__score = (r.stargazers_count||0) + (r.watchers_count||0) + (r.open_issues ? 0.1 : 0) + (new Date(r.pushed_at).getTime()/10e10));
+      all.sort((a,b) => b.__score - a.__score);
+
+      // Top languages (pelos campos primários)
+      const langCount = {};
+      all.forEach(r => { if(r.language){ langCount[r.language] = (langCount[r.language]||0)+1; } });
+      const langs = Object.entries(langCount).sort((a,b)=>b[1]-a[1]);
+      renderSkills(langs, all);
+      renderProjects(all.slice(0, 12));
+
+      // stars total
+      const stars = all.reduce((s,r)=>s+(r.stargazers_count||0),0);
+      setText('statStars', fmtK(stars));
+    }
+
+    function renderSkills(langs, repos){
+      const chips = $('#skillsChips');
+      const meters = $('#skillsMeters');
+      chips.innerHTML = '';
+      meters.innerHTML = '';
+      const total = langs.reduce((s,[,c]) => s+c, 0) || 1;
+      langs.forEach(([lang,count]) => {
+        const chip = document.createElement('span'); chip.className='chip'; chip.textContent = lang+" · "+count;
+        chips.appendChild(chip);
+        const wrap = document.createElement('div');
+        const label = document.createElement('div'); label.style.display='flex'; label.style.justifyContent='space-between'; label.style.marginBottom='6px';
+        label.innerHTML = `<span>${lang}</span><span class="muted">${Math.round(count*100/total)}%</span>`;
+        const meter = document.createElement('div'); meter.className='meter';
+        const fill = document.createElement('span'); fill.style.width = Math.min(100, Math.round(count*100/total))+'%';
+        meter.appendChild(fill);
+        wrap.appendChild(label); wrap.appendChild(meter);
+        meters.appendChild(wrap);
+      });
+      // anima preenchimento dos meters
+      requestAnimationFrame(()=> document.querySelectorAll('.meter>span').forEach(s=> s.style.transition = 'width .9s ease'));
+    }
+
+    function renderProjects(repos){
+      const wrap = $('#projectsWrap'); wrap.innerHTML='';
+      repos.forEach(r => {
+        const el = document.createElement('article'); el.className='project';
+        const topics = (r.topics||[]).slice(0,3);
+        el.innerHTML = `
+          <div class="row">
+            <h3>${r.name}</h3>
+            <a class="chip" href="${r.html_url}" target="_blank" rel="noopener">GitHub →</a>
+          </div>
+          <p>${(r.description||'Sem descrição').replace(/</g,'&lt;')}</p>
+          <div class="row">
+            <span class="tag">${r.language||'N/A'}</span>
+            <span class="mini">★ ${r.stargazers_count||0}</span>
+          </div>
+          ${topics.length? `<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">${topics.map(t=>`<span class='tag'>#${t}</span>`).join('')}</div>`:''}
+        `;
+        wrap.appendChild(el);
+      });
+    }
+
+    async function init(){
+      revealOnScroll();
+      $('#year').textContent = new Date().getFullYear();
+      await loadProfile();
+      await loadRepos();
+    }
+    init();
+  </script>
+</body>
+</html>
