@@ -21,6 +21,57 @@
       --radius:18px;
       --shadow:0 10px 30px rgba(0,0,0,.35);
     }
+	/* Botão hamburger (escondido no desktop) */
+	.hamburger{
+	  display:none; border:1px solid rgba(255,255,255,.12);
+	  background:#171c2d; color:var(--txt); border-radius:10px;
+	  padding:10px; line-height:0; box-shadow:var(--shadow);
+	}
+
+	/* Overlay (fundo escurecido quando o menu abre) */
+	.nav-scrim{
+	  position:fixed; inset:0; background:rgba(0,0,0,.4);
+	  opacity:0; pointer-events:none; transition:opacity .2s ease;
+	  z-index:49;
+	}
+
+	/* Drawer do menu no mobile */
+	header nav{
+	  transition:transform .25s ease, opacity .2s ease;
+	}
+	@media (max-width: 820px){
+	  .hamburger{ display:inline-flex; align-items:center; justify-content:center; }
+	  /* Header topbar: coloca botão antes do nav */
+	  .topbar{ justify-content:space-between; }
+
+	  /* Nav vira um "drawer" flutuante */
+	  header nav{
+		position:fixed; top:62px; right:16px; left:16px;
+		background:linear-gradient(180deg,#101628,#0d1221);
+		border:1px solid rgba(255,255,255,.10); border-radius:14px;
+		box-shadow:0 18px 36px rgba(0,0,0,.45);
+		padding:10px; z-index:50;
+		transform:translateY(-12px); opacity:0; pointer-events:none;
+	  }
+	  header nav ul{
+		flex-direction:column; gap:4px;
+	  }
+	  header nav a{
+		display:block; padding:12px 12px; border-radius:10px;
+	  }
+
+	  /* Estado aberto */
+	  header nav.open{
+		transform:none; opacity:1; pointer-events:auto;
+	  }
+
+	  /* Scrim visível quando menu abre */
+	  .nav-scrim.show{ opacity:1; pointer-events:auto; }
+
+	  /* Evita scroll do corpo quando o menu está aberto */
+	  body.no-scroll{ overflow:hidden; }
+	}
+
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
@@ -128,16 +179,23 @@
           </div>
         </div>
       </div>
-      <nav aria-label="Seções">
-        <ul>
-          <li><a href="#inicio">Início</a></li>
-          <li><a href="#sobre">Sobre</a></li>
-          <li><a href="#habilidades">Habilidades</a></li>
-          <li><a href="#projetos">Projetos</a></li>
-          <li><a href="#experiencia">Experiência</a></li>
-          <li><a href="#contato">Contato</a></li>
-        </ul>
-      </nav>
+	  <button id="menuBtn" class="hamburger" aria-label="Abrir menu" aria-expanded="false" aria-controls="siteNav">
+		  <!-- ícone (3 linhas) -->
+		  <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
+			<path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+		  </svg>
+		</button>
+
+		<nav id="siteNav" aria-label="Seções">
+		  <ul>
+			<li><a href="#inicio">Início</a></li>
+			<li><a href="#sobre">Sobre</a></li>
+			<li><a href="#habilidades">Habilidades</a></li>
+			<li><a href="#projetos">Projetos</a></li>
+			<li><a href="#experiencia">Experiência</a></li>
+			<li><a href="#contato">Contato</a></li>
+		  </ul>
+		</nav>
     </div>
   </header>
 
@@ -296,7 +354,7 @@
   </main>
 
   <footer>
-    Desenvolvido por Denis Luniere · Tema dark custom inspirado no layout Istanbul · © <span id="year"></span>
+    Desenvolvido por Denis Luniere · Tema dark custom · © <span id="year"></span>
   </footer>
 
   <script>
@@ -322,49 +380,201 @@
       return res.json();
     }
 
-    async function loadProfile(){
-      // pega o primeiro usuário que responder
-      for(const u of USERS){
-        try{
-          const p = await fetchJson(`${GH}/users/${u}`);
-          $('#avatarTop').src = p.avatar_url; $('#avatarHero').src = p.avatar_url;
-          setText('devName', p.name || p.login);
-          setText('devAlias', '@'+p.login);
-          setText('devBio', p.bio || 'Software Developer');
-          setText('devLocation', p.location || '');
-          setText('statRepos', p.public_repos);
-          setText('statFollowers', p.followers);
-          // mail se existir no perfil
-          if(p.email){ const l=$('#emailLink'); l.href = 'mailto:'+p.email; l.textContent = p.email; }
-          break;
-        }catch(e){ /* tenta o próximo */ }
-      }
-    }
+	async function loadProfiles(){
+	  const profiles = [];
+	  for (const u of USERS){
+		try { profiles.push(await fetchJson(`${GH}/users/${u}`)); } catch(e){}
+	  }
+	  if(!profiles.length) return;
 
-    async function loadRepos(){
-      // junta repos de ambos, remove fork e ordena por atividade + stars
-      const all = [];
-      for(const u of USERS){
-        try{
-          const list = await fetchJson(`${GH}/users/${u}/repos?per_page=100&sort=updated`);
-          list.forEach(r => { if(!r.fork) all.push({owner:u, ...r}); });
-        }catch(e){ console.warn('Falha ao ler repos de', u, e); }
-      }
-      // computa score simples
-      all.forEach(r => r.__score = (r.stargazers_count||0) + (r.watchers_count||0) + (r.open_issues ? 0.1 : 0) + (new Date(r.pushed_at).getTime()/10e10));
-      all.sort((a,b) => b.__score - a.__score);
+	  // usa a 1ª como “principal” para avatar/nome
+	  const primary = profiles[0];
+	  $('#avatarTop').src  = primary.avatar_url;
+	  $('#avatarHero').src = primary.avatar_url;
 
-      // Top languages (pelos campos primários)
-      const langCount = {};
-      all.forEach(r => { if(r.language){ langCount[r.language] = (langCount[r.language]||0)+1; } });
-      const langs = Object.entries(langCount).sort((a,b)=>b[1]-a[1]);
-      renderSkills(langs, all);
-      renderProjects(all.slice(0, 12));
+	  setText('devName', primary.name || primary.login);
+	  setText('devAlias', profiles.map(p => '@'+p.login).join(' · '));
+	  setText('devBio', primary.bio || 'Software Developer');
+	  setText('devLocation', primary.location || '');
 
-      // stars total
-      const stars = all.reduce((s,r)=>s+(r.stargazers_count||0),0);
-      setText('statStars', fmtK(stars));
-    }
+	  // totais somados
+	  const totalRepos      = profiles.reduce((s,p)=> s+(p.public_repos||0), 0);
+	  const totalFollowers  = profiles.reduce((s,p)=> s+(p.followers||0),     0);
+	  setText('statRepos', totalRepos);
+	  setText('statFollowers', totalFollowers);
+
+	  // breakdown no title (tooltip)
+	  const reposTitle     = profiles.map(p => `${p.login}: ${p.public_repos}`).join(' | ');
+	  const followersTitle = profiles.map(p => `${p.login}: ${p.followers}`).join(' | ');
+	  document.getElementById('statRepos').parentElement.title     = reposTitle;
+	  document.getElementById('statFollowers').parentElement.title = followersTitle;
+
+	  // e-mail do perfil principal (se houver)
+	  if(primary.email){
+		const l = $('#emailLink'); l.href = 'mailto:'+primary.email; l.textContent = primary.email;
+	  }
+	}
+
+	async function loadRepos(){
+	  const all = [];
+	  const starsByOwner = {};
+
+	  for (const u of USERS){
+		try{
+		  const list = await fetchJson(`${GH}/users/${u}/repos?per_page=100&sort=updated`);
+		  list.forEach(r => {
+			if (!r.fork){
+			  const owner = r.full_name?.split('/')?.[0] || u;
+			  // ⬇️ Normaliza a linguagem AQUI (vazio/null => "Java")
+			  const lang = (r.language && String(r.language).trim()) || 'Java';
+
+			  // guardamos owner e language já normalizada
+			  all.push({ ...r, __owner: owner, language: lang });
+
+			  starsByOwner[owner] = (starsByOwner[owner] || 0) + (r.stargazers_count || 0);
+			}
+		  });
+		}catch(e){ console.warn('Falha ao ler repos de', u, e); }
+	  }
+
+	  // score e ordenação como antes
+	  all.forEach(r => r.__score =
+		(r.stargazers_count||0) + (r.watchers_count||0) + (r.open_issues ? 0.1 : 0) + (new Date(r.pushed_at).getTime()/10e10)
+	  );
+	  all.sort((a,b) => b.__score - a.__score);
+
+	  // ==== HABILIDADES (por repositório principal) ====
+	  const skillsCounts = computeSkillsFromPrimary(all);   // agora r.language já vem preenchido
+	  renderSkillsFromCounts(skillsCounts);
+
+	  // ==== PROJETOS (mostra todos) ====
+	  renderProjects(all);  // cards usarão r.language já normalizado
+
+	  // ==== STARS totais e tooltip por conta ====
+	  const starsTotal = all.reduce((s,r)=> s+(r.stargazers_count||0), 0);
+	  setText('statStars', fmtK(starsTotal));
+	  document.getElementById('statStars').parentElement.title =
+		Object.entries(starsByOwner).map(([o,s]) => `${o}: ${s}`).join(' | ');
+	}
+	
+	function computeSkillsFromPrimary(repos){
+	  const counts = {};
+	  repos.forEach(r => {
+		const lang = (r.language && String(r.language).trim()) || 'Java';
+		counts[lang] = (counts[lang] || 0) + 1;
+	  });
+	  return counts;
+	}
+
+	// Render com filtro de ruído (sem “0%”) e agrupamento
+	function renderSkillsFromCounts(counts){
+	  const chips  = document.getElementById('skillsChips');
+	  const meters = document.getElementById('skillsMeters');
+	  chips.innerHTML = ''; meters.innerHTML = '';
+
+	  const entries = Object.entries(counts).sort((a,b)=> b[1]-a[1]);
+	  const total   = entries.reduce((s,[,c])=> s+c, 0) || 1;
+
+	  const MIN_PCT = 0;       // omite < 0%
+	  const TOP_N   = 30;      // mostra só top 30 e agrupa o resto
+	  const final   = [];
+	  let outrasPct = 0;
+
+	  entries.forEach(([lang, c])=>{
+		const pct = Math.round((c*100)/total);
+		if(pct < MIN_PCT) { outrasPct += pct; return; }
+		if(final.length < TOP_N) final.push([lang, pct, c]);
+		else outrasPct += pct;
+	  });
+	  if(outrasPct > 0) final.push(['Outros', outrasPct, 0]);
+
+	  // chips (Lang · quantidade de repositórios)
+	  final.forEach(([lang, pct, c])=>{
+		const chip = document.createElement('span');
+		chip.className = 'chip';
+		chip.textContent = `${lang} · ${lang==='Outros' ? pct+'%' : c}`;
+		chips.appendChild(chip);
+	  });
+
+	  // barras
+	  final.forEach(([lang, pct])=>{
+		const wrap  = document.createElement('div');
+		const label = document.createElement('div');
+		label.style.display='flex';
+		label.style.justifyContent='space-between';
+		label.style.marginBottom='6px';
+		label.innerHTML = `<span>${lang}</span><span class="muted">${pct}%</span>`;
+
+		const meter = document.createElement('div'); meter.className='meter';
+		const fill  = document.createElement('span'); fill.style.width = Math.min(100, pct)+'%';
+		meter.appendChild(fill);
+
+		wrap.appendChild(label); wrap.appendChild(meter);
+		meters.appendChild(wrap);
+	  });
+
+	  requestAnimationFrame(()=> document.querySelectorAll('.meter>span')
+		.forEach(s => s.style.transition = 'width .9s ease'));
+	}
+
+	async function aggregateLanguages(repos){
+	  const acc = {};
+	  // limita concorrência para evitar pico (opcional)
+	  const queue = [...repos];
+	  const CONC = 5;
+	  const workers = Array.from({length: CONC}, async () => {
+		while(queue.length){
+		  const r = queue.shift();
+		  const owner = r.full_name?.split('/')?.[0] || r.__owner;
+		  const url = `${GH}/repos/${owner}/${r.name}/languages`;
+		  try{
+			const obj = await fetchJson(url); // { Java: 123, HTML: 456, ... }
+			for(const [lang, bytes] of Object.entries(obj)){
+			  acc[lang] = (acc[lang] || 0) + (bytes || 0);
+			}
+		  }catch(e){
+			// fallback silencioso: ignora esse repo
+		  }
+		}
+	  });
+	  await Promise.all(workers);
+	  return acc;
+	}
+
+	// Render das skills usando % de bytes (mais fiel que "1 linguagem por repo")
+	function renderSkillsByBytes(langsBytes){
+	  const chips  = $('#skillsChips');
+	  const meters = $('#skillsMeters');
+	  chips.innerHTML = ''; meters.innerHTML = '';
+
+	  const totalBytes = langsBytes.reduce((s,[,b]) => s + b, 0) || 1;
+
+	  langsBytes.forEach(([lang, bytes]) => {
+		const pct = Math.round((bytes * 100) / totalBytes);
+
+		const chip = document.createElement('span');
+		chip.className = 'chip';
+		chip.textContent = `${lang} · ${pct}%`;
+		chips.appendChild(chip);
+
+		const wrap  = document.createElement('div');
+		const label = document.createElement('div');
+		label.style.display='flex';
+		label.style.justifyContent='space-between';
+		label.style.marginBottom='6px';
+		label.innerHTML = `<span>${lang}</span><span class="muted">${pct}%</span>`;
+
+		const meter = document.createElement('div'); meter.className='meter';
+		const fill  = document.createElement('span'); fill.style.width = Math.min(100, pct)+'%';
+		meter.appendChild(fill);
+
+		wrap.appendChild(label); wrap.appendChild(meter);
+		meters.appendChild(wrap);
+	  });
+
+	  // anima barras
+	  requestAnimationFrame(()=> document.querySelectorAll('.meter>span').forEach(s => s.style.transition = 'width .9s ease'));
+	}
 
     function renderSkills(langs, repos){
       const chips = $('#skillsChips');
@@ -389,31 +599,68 @@
     }
 
     function renderProjects(repos){
-      const wrap = $('#projectsWrap'); wrap.innerHTML='';
-      repos.forEach(r => {
-        const el = document.createElement('article'); el.className='project';
-        const topics = (r.topics||[]).slice(0,3);
-        el.innerHTML = `
-          <div class="row">
-            <h3>${r.name}</h3>
-            <a class="chip" href="${r.html_url}" target="_blank" rel="noopener">GitHub →</a>
-          </div>
-          <p>${(r.description||'Sem descrição').replace(/</g,'&lt;')}</p>
-          <div class="row">
-            <span class="tag">${r.language||'N/A'}</span>
-            <span class="mini">★ ${r.stargazers_count||0}</span>
-          </div>
-          ${topics.length? `<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">${topics.map(t=>`<span class='tag'>#${t}</span>`).join('')}</div>`:''}
-        `;
-        wrap.appendChild(el);
-      });
-    }
+	  const wrap = $('#projectsWrap'); wrap.innerHTML='';
+	  repos.forEach(r => {
+		const lang = (r.language && String(r.language).trim()) || 'Java';
+		const el = document.createElement('article'); el.className='project';
+		const topics = (r.topics||[]).slice(0,3);
+		el.innerHTML = `
+		  <div class="row">
+			<h3>${r.name}</h3>
+			<a class="chip" href="${r.html_url}" target="_blank" rel="noopener">GitHub →</a>
+		  </div>
+		  <p>${(r.description||'Sem descrição').replace(/</g,'&lt;')}</p>
+		  <div class="row">
+			<span class="tag">${lang}</span>
+			<span class="mini">★ ${r.stargazers_count||0}</span>
+		  </div>
+		  ${topics.length? `<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">${topics.map(t=>`<span class='tag'>#${t}</span>`).join('')}</div>`:''}
+		`;
+		wrap.appendChild(el);
+	  });
+	}
+
 
     async function init(){
       revealOnScroll();
       $('#year').textContent = new Date().getFullYear();
-      await loadProfile();
+      await loadProfiles();
       await loadRepos();
+	  
+	  // === Menu mobile (hamburger) ===
+	  (function(){
+	    // cria o scrim uma única vez
+		const scrim = document.createElement('div');
+		scrim.className = 'nav-scrim';
+		document.body.appendChild(scrim);
+
+		const btn = document.getElementById('menuBtn');
+		const nav = document.getElementById('siteNav');
+
+		function openMenu(){
+		  nav.classList.add('open');
+		  scrim.classList.add('show');
+		  btn.setAttribute('aria-expanded','true');
+		  document.body.classList.add('no-scroll');
+		}
+		function closeMenu(){
+		  nav.classList.remove('open');
+		  scrim.classList.remove('show');
+		  btn.setAttribute('aria-expanded','false');
+		  document.body.classList.remove('no-scroll');
+		}
+		function toggleMenu(){
+		  nav.classList.contains('open') ? closeMenu() : openMenu();
+		}
+
+		btn.addEventListener('click', toggleMenu);
+		scrim.addEventListener('click', closeMenu);
+		// fecha ao clicar em qualquer link do menu
+		nav.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+		// fecha com ESC
+		window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeMenu(); });
+	  })();
+
     }
     init();
   </script>
